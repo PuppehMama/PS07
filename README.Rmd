@@ -1,0 +1,49 @@
+---
+title: "California State Map Outline"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Code to map the state of California and its capital
+
+The capital is Sacramento
+
+```{r map}
+
+library(tidyverse)
+library(sf)
+library(maps)
+
+USA_map <-  maps::map("state", plot = FALSE, fill = TRUE)
+
+USA_sf <- USA_map %>% 
+  st_as_sf(crs = 4326)
+
+CA_sf <- USA_sf %>%
+  filter(ID == "california")
+
+CA_capital <- tibble(
+  name = c("Sacramento"),
+  lat = c(38.5816), 
+  lon = c(-121.4944)
+)
+
+CA_capital_sf <- CA_capital %>%
+  st_as_sf(coords = c("lon", "lat"), crs = 4326)
+
+```
+
+## ggplot Code
+Creates the map
+
+```{r ggplot, echo=TRUE}
+
+ggplot() +
+  geom_sf(data = CA_sf) +
+  geom_sf(data = CA_capital_sf, aes(col = name), size = 3) +
+  labs(title="California State", x= "Longitude", y= "Latitude", color= "Capital")
+
+```
